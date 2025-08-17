@@ -1,4 +1,5 @@
 <?php
+// database/seeders/SimpleDepartmentSeeder.php
 
 namespace Database\Seeders;
 
@@ -11,38 +12,21 @@ class DepartmentSeeder extends Seeder
     {
         $departments = [
             [
-                'name' => 'Produksi',
-                'description' => 'Departemen produksi utama Sudut Timur Coffee'
+                'name' => 'Departemen Produksi',
+                'description' => 'Departemen produksi kopi'
             ],
             [
-                'name' => 'Pengemasan',
-                'description' => 'Departemen pengemasan dan finishing'
+                'name' => 'Departemen Quality Control',
+                'description' => 'Departemen kontrol kualitas'
             ],
             [
-                'name' => 'Quality Control',
-                'description' => 'Departemen kontrol kualitas produk kopi'
-            ],
-            [
-                'name' => 'Gudang',
-                'description' => 'Departemen penyimpanan dan distribusi'
-            ],
-            [
-                'name' => 'Maintenance',
-                'description' => 'Departemen perawatan mesin dan peralatan'
-            ],
-            [
-                'name' => 'Research & Development',
-                'description' => 'Departemen riset dan pengembangan produk'
+                'name' => 'Departemen Packaging',
+                'description' => 'Departemen pengemasan'
             ]
         ];
 
-        foreach ($departments as $deptData) {
-            Department::firstOrCreate(
-                ['name' => $deptData['name']],
-                $deptData
-            );
+        foreach ($departments as $department) {
+            Department::create($department);
         }
-
-        echo "✅ " . count($departments) . " departments berhasil dibuat!\n";
     }
 }

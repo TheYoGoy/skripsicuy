@@ -33,9 +33,9 @@ class Product extends Model
     }
 
     // === RELATIONSHIPS YANG SUDAH ADA ===
-    public function productions() 
+    public function productions()
     {
-        return $this->hasMany(Production::class); 
+        return $this->hasMany(Production::class);
     }
 
     public function productActivityUsages()

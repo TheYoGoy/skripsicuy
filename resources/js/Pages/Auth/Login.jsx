@@ -25,32 +25,24 @@ export default function Login({ status, canResetPassword }) {
             <div className="min-h-screen flex items-center justify-center p-4">
                 <div className="w-full max-w-md">
                     {status && (
-                        <div className="mb-6 rounded-lg bg-green-50 border border-green-200 p-4 text-sm text-green-700">
+                        <div className="mb-6 rounded-xl bg-emerald-50/95 backdrop-blur-sm border border-emerald-200 p-4 text-sm text-emerald-700 shadow-lg">
                             {status}
                         </div>
                     )}
 
                     {/* Main login card */}
-                    <div className="bg-white rounded-lg shadow-lg border border-gray-200">
-                        {/* Logo dan header */}
-                        <div className="text-center border-b border-gray-100">
-                            <div>
-                                <img
-                                    src="/logo.png"
-                                    alt="Logo"
-                                    className="w-40 h-21 mx-auto object-cover object-center"
-                                />
-                            </div>
-                            <h2 className="text-2xl font-semibold text-gray-900 mb-1">
+                    <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200">
+                        `{/* Header */}
+                        <div className="text-center border-b border-gray-100 p-8">
+                            <h2 className="text-3xl font-bold text-gray-900 mb-3">
                                 Masuk ke Akun
                             </h2>
-                            <p className="text-gray-600 text-sm">
+                            <p className="text-gray-600">
                                 Silakan masukkan detail akun Anda
                             </p>
                         </div>
-
                         {/* Form content */}
-                        <div className="p-8 pt-6">
+                        <div className="p-8">
                             <form onSubmit={submit} className="space-y-5">
                                 <div>
                                     <InputLabel
@@ -63,7 +55,7 @@ export default function Login({ status, canResetPassword }) {
                                         type="email"
                                         name="email"
                                         value={data.email}
-                                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-colors text-gray-900 placeholder-gray-400"
+                                        className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 transition-colors text-gray-900 placeholder-gray-400"
                                         autoComplete="username"
                                         isFocused={true}
                                         onChange={(e) =>
@@ -88,7 +80,7 @@ export default function Login({ status, canResetPassword }) {
                                         type="password"
                                         name="password"
                                         value={data.password}
-                                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-colors text-gray-900 placeholder-gray-400"
+                                        className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 transition-colors text-gray-900 placeholder-gray-400"
                                         autoComplete="current-password"
                                         onChange={(e) =>
                                             setData("password", e.target.value)
@@ -112,7 +104,7 @@ export default function Login({ status, canResetPassword }) {
                                                     e.target.checked
                                                 )
                                             }
-                                            className="text-blue-600 focus:ring-blue-500"
+                                            className="text-emerald-600 focus:ring-emerald-500"
                                         />
                                         <span className="ml-2 text-sm text-gray-600">
                                             Ingat saya
@@ -122,7 +114,7 @@ export default function Login({ status, canResetPassword }) {
                                     {canResetPassword && (
                                         <Link
                                             href={route("password.request")}
-                                            className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                                            className="text-sm text-emerald-600 hover:text-emerald-800 hover:underline"
                                         >
                                             Lupa kata sandi?
                                         </Link>
@@ -131,7 +123,7 @@ export default function Login({ status, canResetPassword }) {
 
                                 <div className="pt-4">
                                     <PrimaryButton
-                                        className="w-full justify-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50"
+                                        className="w-full justify-center bg-gradient-to-r from-emerald-700 to-emerald-800 hover:from-emerald-800 hover:to-emerald-900 text-white font-medium py-3 px-4 rounded-lg shadow-sm focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all disabled:opacity-50"
                                         disabled={processing}
                                     >
                                         {processing ? (

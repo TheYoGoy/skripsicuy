@@ -34,7 +34,7 @@ export default function Dashboard({ auth, stats, dashboardData, settings }) {
     // Anda bisa menghapusnya setelah grafik tampil dengan benar.
 
     console.log("auth:", auth);
-console.log("auth.user:", auth?.user);
+    console.log("auth.user:", auth?.user);
     console.log("Dashboard Props:", { auth, stats, dashboardData });
     console.log(
         "Activity Cost Breakdown:",
@@ -63,7 +63,7 @@ console.log("auth.user:", auth?.user);
             icon: Users,
             description: "Pengguna terdaftar",
             color: "text-blue-600",
-            bgColor: "bg-blue-500",
+            bgColor: "bg-gradient-to-br from-blue-500 to-blue-600",
             iconColor: "text-blue-500",
         },
         {
@@ -72,7 +72,7 @@ console.log("auth.user:", auth?.user);
             icon: Package,
             description: "Produk aktif",
             color: "text-green-600",
-            bgColor: "bg-green-500",
+            bgColor: "bg-gradient-to-br from-green-500 to-green-600",
             iconColor: "text-green-500",
         },
         {
@@ -81,7 +81,7 @@ console.log("auth.user:", auth?.user);
             icon: Activity,
             description: "Aktivitas terdaftar",
             color: "text-orange-600",
-            bgColor: "bg-orange-500",
+            bgColor: "bg-gradient-to-br from-orange-500 to-orange-600",
             iconColor: "text-orange-500",
         },
         {
@@ -90,12 +90,12 @@ console.log("auth.user:", auth?.user);
             icon: Building,
             description: "Departemen aktif",
             color: "text-purple-600",
-            bgColor: "bg-purple-500",
+            bgColor: "bg-gradient-to-br from-purple-500 to-purple-600",
             iconColor: "text-purple-500",
         },
     ];
 
-    // Quick actions configuration based on user role
+    // Quick actions configuration based on user role - Updated with emerald theme
     const getQuickActions = (userRole) => {
         const allActions = [
             {
@@ -103,7 +103,7 @@ console.log("auth.user:", auth?.user);
                 description: "Manajemen pengguna sistem",
                 href: route("users.index"),
                 icon: Users,
-                color: "bg-blue-500 hover:bg-blue-600",
+                color: "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700",
                 roles: ["admin"],
             },
             {
@@ -111,7 +111,7 @@ console.log("auth.user:", auth?.user);
                 description: "Manajemen data produk",
                 href: route("products.index"),
                 icon: Package,
-                color: "bg-green-500 hover:bg-green-600",
+                color: "bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700",
                 roles: ["admin", "manager"],
             },
             {
@@ -119,7 +119,7 @@ console.log("auth.user:", auth?.user);
                 description: "Manajemen aktivitas produksi",
                 href: route("activities.index"),
                 icon: Activity,
-                color: "bg-orange-500 hover:bg-orange-600",
+                color: "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800",
                 roles: ["admin", "manager"],
             },
             {
@@ -127,7 +127,7 @@ console.log("auth.user:", auth?.user);
                 description: "Manajemen departemen",
                 href: route("departments.index"),
                 icon: Building,
-                color: "bg-purple-500 hover:bg-purple-600",
+                color: "bg-gradient-to-r from-emerald-700 to-emerald-800 hover:from-emerald-800 hover:to-emerald-900",
                 roles: ["admin", "manager"],
             },
             {
@@ -135,7 +135,7 @@ console.log("auth.user:", auth?.user);
                 description: "Manajemen data biaya",
                 href: route("costs.index"),
                 icon: DollarSign,
-                color: "bg-red-500 hover:bg-red-600",
+                color: "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700",
                 roles: ["admin", "manager"],
             },
             {
@@ -143,7 +143,7 @@ console.log("auth.user:", auth?.user);
                 description: "Manajemen driver biaya",
                 href: route("cost-drivers.index"),
                 icon: Truck,
-                color: "bg-indigo-500 hover:bg-indigo-600",
+                color: "bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700",
                 roles: ["admin", "manager"],
             },
             {
@@ -151,7 +151,7 @@ console.log("auth.user:", auth?.user);
                 description: "Pencatatan data produksi",
                 href: route("productions.index"),
                 icon: ClipboardList,
-                color: "bg-pink-500 hover:bg-pink-600",
+                color: "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700",
                 roles: ["admin", "manager", "operator"],
             },
             {
@@ -159,7 +159,7 @@ console.log("auth.user:", auth?.user);
                 description: "Laporan Activity Based Costing",
                 href: route("abc-reports.index"),
                 icon: BarChart3,
-                color: "bg-gray-500 hover:bg-gray-600",
+                color: "bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700",
                 roles: ["admin", "manager"],
             },
         ];
@@ -199,7 +199,7 @@ console.log("auth.user:", auth?.user);
 
             <div className="space-y-6">
                 {/* Welcome Section */}
-                <Card className="relative overflow-hidden bg-cyan-900">
+                <Card className="relative overflow-hidden bg-gradient-to-r from-emerald-600 to-emerald-700">
                     {/* Icon background besar di kanan */}
                     <TrendingUp className="absolute right-4 top-1/2 -translate-y-1/2 h-32 w-32 text-white opacity-10" />
 
@@ -230,26 +230,26 @@ console.log("auth.user:", auth?.user);
                         return (
                             <Card
                                 key={index}
-                                className={`hover:shadow-md transition-shadow ${stat.bgColor}`}
+                                className={`hover:shadow-md transition-shadow ${stat.bgColor} border-0 relative overflow-hidden`}
                             >
                                 <CardContent className="p-6">
-                                    <div className="flex items-center justify-between">
-                                        <div className="text-white">
-                                            <p className="text-lg text-white font-bold ">
-                                                {stat.title}
-                                            </p>
-                                            <p
-                                                className={`text-3xl font-bold `}
-                                            >
-                                                {stat.value.toLocaleString()}
-                                            </p>
-                                            <p className="text-xs text-white">
-                                                {stat.description}
-                                            </p>
-                                        </div>
-                                        <div className={`p-3 rounded-full `}>
+                                    {/* Icon di pojok kanan atas dengan background circle */}
+                                    <div className="absolute top-4 right-4">
+                                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
                                             <Icon className="h-6 w-6 text-white" />
                                         </div>
+                                    </div>
+
+                                    <div className="text-white">
+                                        <p className="text-sm text-white/80 font-medium mb-1">
+                                            {stat.title}
+                                        </p>
+                                        <p className="text-3xl font-bold text-white mb-2">
+                                            {stat.value.toLocaleString()}
+                                        </p>
+                                        <p className="text-xs text-white/70">
+                                            {stat.description}
+                                        </p>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -259,7 +259,7 @@ console.log("auth.user:", auth?.user);
 
                 <Separator />
 
-                {/* Charts Section - Tambahkan pengecekan untuk dashboardData dan properti turunannya */}
+                {/* Charts Section */}
                 {dashboardData &&
                 Array.isArray(dashboardData.activity_cost_breakdown) &&
                 Array.isArray(dashboardData.product_cost_breakdown) ? (
@@ -275,9 +275,11 @@ console.log("auth.user:", auth?.user);
                         />
                     </div>
                 ) : (
-                    <Card>
+                    <Card className="border-emerald-200">
                         <CardHeader>
-                            <CardTitle>Data Grafik Tidak Tersedia</CardTitle>
+                            <CardTitle className="text-emerald-700">
+                                Data Grafik Tidak Tersedia
+                            </CardTitle>
                             <CardDescription>
                                 Tidak dapat memuat data grafik. Pastikan data
                                 ABC telah dihitung di backend dan memiliki

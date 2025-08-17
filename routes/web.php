@@ -76,11 +76,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/cost-activity-allocations/calculate', [CostActivityAllocationController::class, 'calculate'])->name('cost-activity-allocations.calculate');
     Route::post('/cost-activity-allocations/activities-by-date', [CostActivityAllocationController::class, 'getActivitiesByDate'])->name('cost-activity-allocations.activities-by-date');
     Route::resource('cost-activity-allocations', CostActivityAllocationController::class)->except(['create', 'edit', 'show']);
+    Route::post('/cost-activity-allocations/activities-by-cost', [CostActivityAllocationController::class, 'getActivitiesByCost'])
+        ->name('cost-activity-allocations.activities-by-cost');
 
-    // Product Activity Usages
+    // Product Activity Usages - Route khusus harus diletakkan SEBELUM resource route
+    Route::post('/product-activity-usages/calculate', [ProductActivityUsageController::class, 'calculate'])
+        ->name('product-activity-usages.calculate');
+    Route::get('/product-activity-usages/export/excel', [ProductActivityUsageController::class, 'exportExcel'])
+        ->name('product-activity-usages.export.excel');
+    Route::get('/product-activity-usages/export/pdf', [ProductActivityUsageController::class, 'exportPdf'])
+        ->name('product-activity-usages.export.pdf');
+
+    // ROUTES BARU - Recalculate endpoints untuk Product Activity Usages
+    Route::post('/product-activity-usages-recalculate/all', [ProductActivityUsageController::class, 'recalculateAll'])
+        ->name('product-activity-usages.recalculate.all');
+    Route::get('/product-activity-usages-recalculate/check', [ProductActivityUsageController::class, 'checkPrerequisites'])
+        ->name('product-activity-usages.check.prerequisites');
+    Route::post('/product-activity-usages-recalculate/{id}', [ProductActivityUsageController::class, 'recalculateSingle'])
+        ->name('product-activity-usages.recalculate.single');
+
+    // Resource route untuk Product Activity Usages
     Route::resource('product-activity-usages', ProductActivityUsageController::class)->except(['create', 'edit', 'show']);
-    Route::get('/product-activity-usages/export/excel', [ProductActivityUsageController::class, 'exportExcel'])->name('product-activity-usages.export.excel');
-    Route::get('/product-activity-usages/export/pdf', [ProductActivityUsageController::class, 'exportPdf'])->name('product-activity-usages.export.pdf');
 
     // Activity Cost Driver Usages
     Route::resource('activity-cost-driver-usages', ActivityCostDriverUsageController::class)->except(['create', 'edit', 'show']);

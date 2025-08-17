@@ -1,4 +1,4 @@
-<?php 
+<?php
 // sudut-timur-backend/app/Models/ActivityCostDriverUsage.php
 
 namespace App\Models;

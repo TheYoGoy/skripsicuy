@@ -60,6 +60,50 @@ class CostActivityAllocationController extends Controller
         ]);
     }
 
+    // METHOD BARU: Get activities berdasarkan cost dan tanggal
+    public function getActivitiesByCost(Request $request)
+    {
+        $request->validate([
+            'cost_id' => 'required|exists:costs,id',
+            'date' => 'required|date',
+        ]);
+
+        $costId = $request->input('cost_id');
+        $date = $request->input('date');
+
+        // Get cost with its driver
+        $cost = Cost::with('driver')->findOrFail($costId);
+
+        if (!$cost->driver) {
+            return response()->json([
+                'activities' => [],
+                'message' => 'Biaya ini belum memiliki driver biaya',
+                'driver_name' => null
+            ]);
+        }
+
+        $driverId = $cost->driver->id;
+
+        // Get activities that use the same cost driver and have usage data for the specific date
+        $activities = Activity::whereHas('activityCostDriverUsages', function ($query) use ($driverId, $date) {
+            $query->where('cost_driver_id', $driverId)
+                ->whereMonth('usage_date', date('m', strtotime($date)))
+                ->whereYear('usage_date', date('Y', strtotime($date)));
+        })
+            ->get(['id', 'name'])
+            ->map(function ($activity) {
+                return [
+                    'id' => $activity->id,
+                    'name' => $activity->name,
+                ];
+            });
+
+        return response()->json([
+            'activities' => $activities,
+            'driver_name' => $cost->driver->name
+        ]);
+    }
+
     public function getActivitiesByDate(Request $request)
     {
         $request->validate([

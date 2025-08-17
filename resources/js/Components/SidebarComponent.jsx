@@ -27,25 +27,20 @@ const SidebarComponent = ({ user, settings }) => {
     }, [isCollapsed]);
 
     if (!user || !user.role) {
-    return <div>Loading sidebar...</div>;
-}
-
-
+        return <div>Loading sidebar...</div>;
+    }
 
     const userRole = user.role;
 
     useEffect(() => {
-    console.log("SIDEBAR - user =", user);
-    console.log("SIDEBAR - userRole =", user?.role);
-}, [user]);
-
-
-
+        console.log("SIDEBAR - user =", user);
+        console.log("SIDEBAR - userRole =", user?.role);
+    }, [user]);
 
     return (
         <Sidebar collapsible="icon" className="border-none">
             <SidebarHeader>
-                <TeamSwitcher/>
+                <TeamSwitcher />
             </SidebarHeader>
             <Separator className="mb-2" />
             <SidebarContent>

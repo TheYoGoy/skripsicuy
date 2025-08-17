@@ -3,12 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Laporan ABC Lengkap - {{ \Carbon\Carbon::create(null, $selectedMonth)->translatedFormat('F') }} {{ $selectedYear }}</title>
+    <title>Laporan ABC Lengkap - {{ $monthName ?? 'Unknown' }} {{ $selectedYear ?? 'Unknown' }}</title>
     <style>
         body {
             font-family: "DejaVu Sans", sans-serif;
             font-size: 11px;
-            margin: 40px;
+            margin: 30px;
             color: #333;
         }
 
@@ -39,6 +39,7 @@
             font-size: 13px;
             margin-top: 25px;
             margin-bottom: 10px;
+            color: #2c3e50;
         }
 
         table {
@@ -70,6 +71,10 @@
             text-align: right;
         }
 
+        .text-bold {
+            font-weight: bold;
+        }
+
         .footer {
             margin-top: 40px;
             text-align: right;
@@ -77,11 +82,7 @@
         }
 
         .footer p {
-            margin: 0;
-        }
-
-        .text-bold {
-            font-weight: bold;
+            margin: 2px 0;
         }
 
         .product-detail-table {
@@ -109,7 +110,6 @@
             background-color: #f5f5f5;
         }
 
-        /* TAMBAHAN: Style untuk department */
         .department-header {
             background-color: #e6f3ff;
             font-weight: bold;
@@ -118,24 +118,31 @@
         .department-summary {
             background-color: #f0f8ff;
         }
+
+        .no-data {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            padding: 20px;
+        }
     </style>
 </head>
 
 <body>
 
     <div class="kop">
-        <h2>Kopi Sudut Timur </h2>
+        <h2>Kopi Sudut Timur</h2>
         <p>Jl. Bina Marga No. 8, Cipayung, Kota Jakarta Timur, 13840</p>
         <p>Tanggal: {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
     </div>
 
     <div class="judul">
         LAPORAN BIAYA BERBASIS AKTIVITAS (ABC) LENGKAP<br>
-        PERIODE: {{ \Carbon\Carbon::create(null, $selectedMonth)->translatedFormat('F Y') }}
+        PERIODE: {{ $monthName ?? 'Unknown Month' }} {{ $selectedYear ?? 'Unknown Year' }}
     </div>
 
-    <!-- TAMBAHAN: Section 1 - Ringkasan Biaya per Departemen -->
-    @if($departmentReports && $departmentReports->count() > 0)
+    <!-- Section 1: Ringkasan Biaya per Departemen -->
+    @if(isset($departmentReports) && $departmentReports->count() > 0)
     <h3>1. Ringkasan Biaya per Departemen</h3>
     <table>
         <thead>
@@ -151,10 +158,15 @@
             @foreach($departmentReports as $index => $deptReport)
             <tr>
                 <td class="text-center">{{ $loop->iteration }}</td>
-                <td>{{ $deptReport['department']->name ?? '-' }}</td>
-                <td class="text-center">{{ $deptReport['activity_count'] }}</td>
-                <td class="text-right">Rp {{ number_format($deptReport['total_cost'], 0, ',', '.') }}</td>
-                <td class="text-right">Rp {{ number_format($deptReport['activity_count'] > 0 ? $deptReport['total_cost'] / $deptReport['activity_count'] : 0, 0, ',', '.') }}</td>
+                <td>{{ $deptReport['department']->name ?? 'Unknown Department' }}</td>
+                <td class="text-center">{{ $deptReport['activity_count'] ?? 0 }}</td>
+                <td class="text-right">Rp {{ number_format($deptReport['total_cost'] ?? 0, 0, ',', '.') }}</td>
+                <td class="text-right">
+                    @php
+                    $avgCost = ($deptReport['activity_count'] ?? 0) > 0 ? ($deptReport['total_cost'] ?? 0) / $deptReport['activity_count'] : 0;
+                    @endphp
+                    Rp {{ number_format($avgCost, 0, ',', '.') }}
+                </td>
             </tr>
             @endforeach
             <tr class="department-summary">
@@ -166,14 +178,15 @@
     </table>
     @endif
 
-    <!-- UPDATED: Section 2 - Ringkasan Biaya Aktivitas dan Rate (dengan Departemen) -->
-    <h3>{{ $departmentReports && $departmentReports->count() > 0 ? '2' : '1' }}. Ringkasan Biaya Aktivitas dan Rate</h3>
+    <!-- Section 2: Ringkasan Biaya Aktivitas dan Rate -->
+    <h3>{{ (isset($departmentReports) && $departmentReports->count() > 0) ? '2' : '1' }}. Ringkasan Biaya Aktivitas dan Rate</h3>
+    @if(isset($activityReports) && $activityReports->count() > 0)
     <table>
         <thead>
             <tr>
                 <th style="width: 5%;">No.</th>
                 <th style="width: 20%;">Nama Aktivitas</th>
-                <th style="width: 15%;">Departemen</th> <!-- TAMBAHAN: Kolom Departemen -->
+                <th style="width: 15%;">Departemen</th>
                 <th style="width: 15%;">Driver Biaya Utama</th>
                 <th style="width: 8%;">Unit Driver</th>
                 <th style="width: 12%;" class="text-right">Total Biaya Pool</th>
@@ -182,54 +195,54 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($activityReports as $index => $report)
+            @foreach($activityReports as $index => $report)
             <tr>
                 <td class="text-center">{{ $loop->iteration }}</td>
-                <td>{{ $report['activity']->name ?? '-' }}</td>
-                <td>{{ $report['department'] ? $report['department']->name : 'Tidak Ada Departemen' }}</td> <!-- TAMBAHAN: Department -->
-                <td>{{ $report['activity']->primaryCostDriver->name ?? '-' }}</td>
-                <td class="text-center">{{ $report['activity']->primaryCostDriver->unit ?? '-' }}</td>
-                <td class="text-right">Rp {{ number_format($report['allocated_cost'], 0, ',', '.') }}</td>
-                <td class="text-center">{{ number_format($report['driver_usage'], 2, ',', '.') }}</td>
-                <td class="text-right">Rp {{ number_format($report['activity_rate'], 0, ',', '.') }}</td>
+                <td>{{ $report['activity']->name ?? 'Unknown Activity' }}</td>
+                <td>{{ $report['department'] ? $report['department']->name : 'Tidak Ada Departemen' }}</td>
+                <td>{{ optional($report['activity']->primaryCostDriver)->name ?? 'Multiple Drivers' }}</td>
+                <td class="text-center">{{ optional($report['activity']->primaryCostDriver)->unit ?? 'Units' }}</td>
+                <td class="text-right">Rp {{ number_format($report['allocated_cost'] ?? 0, 0, ',', '.') }}</td>
+                <td class="text-center">{{ number_format($report['driver_usage'] ?? 0, 2, ',', '.') }}</td>
+                <td class="text-right">Rp {{ number_format($report['activity_rate'] ?? 0, 0, ',', '.') }}</td>
             </tr>
-            @empty
-            <tr>
-                <td colspan="8" class="text-center">Tidak ada data aktivitas dan rate untuk periode ini.</td> <!-- UPDATED: colspan 8 -->
-            </tr>
-            @endforelse
+            @endforeach
         </tbody>
     </table>
+    @else
+    <div class="no-data">Tidak ada data aktivitas untuk periode ini.</div>
+    @endif
 
-    <!-- UPDATED: Section 3 - Detail Alokasi Biaya Aktivitas per Produk (dengan Departemen) -->
-    <h3>{{ $departmentReports && $departmentReports->count() > 0 ? '3' : '2' }}. Detail Alokasi Biaya Aktivitas per Produk</h3>
+    <!-- Section 3: Detail Alokasi Biaya Aktivitas per Produk -->
+    <h3>{{ (isset($departmentReports) && $departmentReports->count() > 0) ? '3' : '2' }}. Detail Alokasi Biaya Aktivitas per Produk</h3>
+    @if(isset($productReports) && $productReports->count() > 0)
     <table>
         <thead>
             <tr>
                 <th style="width: 5%;">No.</th>
                 <th style="width: 15%;">Nama Produk</th>
-                <th style="width: 45%;">Detail Alokasi Aktivitas</th> <!-- UPDATED: Width untuk accommodate departemen -->
+                <th style="width: 45%;">Detail Alokasi Aktivitas</th>
                 <th style="width: 10%;" class="text-center">Total Produksi (Unit)</th>
                 <th style="width: 12%;" class="text-right">Total Biaya Produk</th>
                 <th style="width: 13%;" class="text-right">Biaya per Unit Produk</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($productReports as $index => $productReport)
+            @foreach($productReports as $index => $productReport)
             @php
-            $product = $productReport['product'];
-            $productId = $product->id ?? null;
+            $product = $productReport['product'] ?? null;
+            $productId = $product ? $product->id : null;
             @endphp
             <tr>
                 <td class="text-center">{{ $loop->iteration }}</td>
-                <td>{{ $product->name ?? '-' }}</td>
+                <td>{{ $product ? $product->name : 'Unknown Product' }}</td>
                 <td>
-                    @if (!empty($productActivityDetails[$productId]))
+                    @if ($productId && isset($productActivityDetails[$productId]) && !empty($productActivityDetails[$productId]))
                     <table class="product-detail-table">
                         <thead>
                             <tr>
                                 <th style="width: 20%;">Aktivitas</th>
-                                <th style="width: 15%;">Departemen</th> <!-- TAMBAHAN: Kolom Departemen -->
+                                <th style="width: 15%;">Departemen</th>
                                 <th style="width: 15%;">Driver (Unit)</th>
                                 <th style="width: 12%;" class="text-center">Konsumsi</th>
                                 <th style="width: 18%;" class="text-right">Rate</th>
@@ -240,24 +253,24 @@
                             @php $subTotalAllocatedCost = 0; @endphp
                             @foreach($productActivityDetails[$productId] as $detail)
                             <tr>
-                                <td>{{ $detail['activity_name'] }}</td>
-                                <td>{{ $detail['department_name'] ?? 'Tidak Ada Departemen' }}</td> <!-- TAMBAHAN: Department -->
-                                <td>{{ $detail['cost_driver_name'] }} ({{ $detail['cost_driver_unit'] }})</td>
-                                <td class="text-center">{{ number_format($detail['quantity_consumed'], 2, ',', '.') }}</td>
-                                <td class="text-right">Rp {{ number_format($detail['activity_rate'], 0, ',', '.') }}</td>
-                                <td class="text-right">Rp {{ number_format($detail['allocated_cost'], 0, ',', '.') }}</td>
+                                <td>{{ $detail['activity_name'] ?? 'Unknown' }}</td>
+                                <td>{{ $detail['department_name'] ?? 'Tidak Ada Departemen' }}</td>
+                                <td>{{ ($detail['cost_driver_name'] ?? 'Unknown') }} ({{ $detail['cost_driver_unit'] ?? 'Units' }})</td>
+                                <td class="text-center">{{ number_format($detail['quantity_consumed'] ?? 0, 2, ',', '.') }}</td>
+                                <td class="text-right">Rp {{ number_format($detail['activity_rate'] ?? 0, 0, ',', '.') }}</td>
+                                <td class="text-right">Rp {{ number_format($detail['allocated_cost'] ?? 0, 0, ',', '.') }}</td>
                             </tr>
-                            @php $subTotalAllocatedCost += $detail['allocated_cost']; @endphp
+                            @php $subTotalAllocatedCost += ($detail['allocated_cost'] ?? 0); @endphp
                             @endforeach
                             <tr class="sub-total-row">
-                                <td colspan="5" class="text-right">Subtotal Biaya Alokasi:</td> <!-- UPDATED: colspan 5 -->
+                                <td colspan="5" class="text-right">Subtotal Biaya Alokasi:</td>
                                 <td class="text-right">Rp {{ number_format($subTotalAllocatedCost, 0, ',', '.') }}</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <!-- TAMBAHAN: Department breakdown per product -->
-                    @if(!empty($productReport['department_breakdown']))
+                    <!-- Department breakdown per product -->
+                    @if(isset($productReport['department_breakdown']) && !empty($productReport['department_breakdown']))
                     <br>
                     <table class="product-detail-table">
                         <thead>
@@ -279,34 +292,39 @@
                     Tidak ada detail aktivitas.
                     @endif
                 </td>
-                <td class="text-center">{{ number_format($productReport['total_production_quantity'], 0, ',', '.') }}</td>
-                <td class="text-right">Rp {{ number_format($productReport['total_cost'], 0, ',', '.') }}</td>
-                <td class="text-right">Rp {{ number_format($productReport['unit_cost'], 0, ',', '.') }}</td>
+                <td class="text-center">{{ number_format($productReport['total_production_quantity'] ?? 0, 0, ',', '.') }}</td>
+                <td class="text-right">Rp {{ number_format($productReport['total_cost'] ?? 0, 0, ',', '.') }}</td>
+                <td class="text-right">Rp {{ number_format($productReport['unit_cost'] ?? 0, 0, ',', '.') }}</td>
             </tr>
-            @empty
-            <tr>
-                <td colspan="6" class="text-center">Tidak ada data biaya produk untuk periode ini.</td>
-            </tr>
-            @endforelse
+            @endforeach
         </tbody>
     </table>
+    @else
+    <div class="no-data">Tidak ada data biaya produk untuk periode ini.</div>
+    @endif
 
-    <!-- TAMBAHAN: Section 4 - Summary Total -->
-    <h3>{{ $departmentReports && $departmentReports->count() > 0 ? '4' : '3' }}. Ringkasan Total Biaya</h3>
+    <!-- Section 4: Summary Total -->
+    <h3>{{ (isset($departmentReports) && $departmentReports->count() > 0) ? '4' : '3' }}. Ringkasan Total Biaya</h3>
     <table style="width: 60%; margin-left: auto; margin-right: 0;">
         <tbody>
             <tr>
                 <td style="width: 60%; padding: 8px;" class="text-right">Total Biaya Seluruh Aktivitas:</td>
-                <td style="width: 40%; padding: 8px;" class="text-right text-bold">Rp {{ number_format($activityReports->sum('allocated_cost'), 0, ',', '.') }}</td>
+                <td style="width: 40%; padding: 8px;" class="text-right text-bold">
+                    Rp {{ number_format((isset($activityReports) ? $activityReports->sum('allocated_cost') : 0), 0, ',', '.') }}
+                </td>
             </tr>
             <tr>
                 <td class="text-right">Total Biaya Seluruh Produk:</td>
-                <td class="text-right text-bold">Rp {{ number_format($productReports->sum('total_cost'), 0, ',', '.') }}</td>
+                <td class="text-right text-bold">
+                    Rp {{ number_format((isset($productReports) ? $productReports->sum('total_cost') : 0), 0, ',', '.') }}
+                </td>
             </tr>
-            @if($departmentReports && $departmentReports->count() > 0)
+            @if(isset($departmentReports) && $departmentReports->count() > 0)
             <tr>
                 <td class="text-right">Total Biaya Seluruh Departemen:</td>
-                <td class="text-right text-bold">Rp {{ number_format($departmentReports->sum('total_cost'), 0, ',', '.') }}</td>
+                <td class="text-right text-bold">
+                    Rp {{ number_format($departmentReports->sum('total_cost'), 0, ',', '.') }}
+                </td>
             </tr>
             @endif
         </tbody>

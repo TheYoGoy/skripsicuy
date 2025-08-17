@@ -95,31 +95,31 @@ export default function ActivityCostDriverUsageIndex({
 
     // Function to handle adding a new usage record
     const handleAddUsage = (e) => {
-    e.preventDefault();
-    post(route("activity-cost-driver-usages.store"), {
-        onSuccess: () => {
-            // Reset form ke state awal
-            reset({
-                activity_id: "",
-                cost_driver_id: "",
-                usage_quantity: "",
-                usage_date: new Date().toISOString().split("T")[0],
-                notes: "",  // ✅ Ini sudah benar
-            });
-            
-            // Reset state tambahan
-            setSelectedCostDriver(null);
-            
-            // Scroll ke atas untuk melihat data baru
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            
-            console.log("Data berhasil ditambahkan dan form direset!");
-        },
-        onError: (formErrors) => {
-            console.error("Failed to add usage:", formErrors);
-        },
-    });
-};
+        e.preventDefault();
+        post(route("activity-cost-driver-usages.store"), {
+            onSuccess: () => {
+                // Reset form ke state awal
+                reset({
+                    activity_id: "",
+                    cost_driver_id: "",
+                    usage_quantity: "",
+                    usage_date: new Date().toISOString().split("T")[0],
+                    notes: "", // ✅ Ini sudah benar
+                });
+
+                // Reset state tambahan
+                setSelectedCostDriver(null);
+
+                // Scroll ke atas untuk melihat data baru
+                window.scrollTo({ top: 0, behavior: "smooth" });
+
+                console.log("Data berhasil ditambahkan dan form direset!");
+            },
+            onError: (formErrors) => {
+                console.error("Failed to add usage:", formErrors);
+            },
+        });
+    };
 
     // Function to show delete confirmation dialog
     const confirmDelete = (usage) => {
@@ -185,31 +185,33 @@ export default function ActivityCostDriverUsageIndex({
     };
 
     const handleSearchKeyDown = (e) => {
-    if (e.key === 'Enter') {
-        handleSearchSubmit();
-    }
-};
-
-const handleSearchSubmit = () => {
-    router.get(
-        route("activity-cost-driver-usages.index"), // Ganti dengan route yang benar
-        { search, perPage },
-        {
-            preserveState: true,
-            replace: true,
+        if (e.key === "Enter") {
+            handleSearchSubmit();
         }
-    );
-};
+    };
+
+    const handleSearchSubmit = () => {
+        router.get(
+            route("activity-cost-driver-usages.index"), // Ganti dengan route yang benar
+            { search, perPage },
+            {
+                preserveState: true,
+                replace: true,
+            }
+        );
+    };
 
     return (
-        <AuthenticatedLayout user={auth.user}
+        <AuthenticatedLayout
+            user={auth.user}
             header={
                 <div className="flex items-center space-x-3">
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                         Catatan Penggunaan
                     </h2>
                 </div>
-            }>
+            }
+        >
             <Head title="Penggunaan Sumber Daya" />
 
             <div className="py-8">
@@ -303,7 +305,7 @@ const handleSearchSubmit = () => {
 
                                             <div className="space-y-3">
                                                 <Label className="text-sm font-semibold text-white">
-                                                    Cost Driver
+                                                    Driver Biaya
                                                 </Label>
                                                 <Select
                                                     value={data.cost_driver_id?.toString()}
@@ -326,7 +328,7 @@ const handleSearchSubmit = () => {
                                                     }}
                                                 >
                                                     <SelectTrigger className="bg-white border-0 focus:ring-2 focus:ring-yellow-400 text-gray-800 shadow-lg rounded-lg py-3 px-4">
-                                                        <SelectValue placeholder="Pilih Cost Driver" />
+                                                        <SelectValue placeholder="Pilih Driver Biaya" />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         {costDrivers.map(
@@ -490,48 +492,67 @@ const handleSearchSubmit = () => {
                                 <div className="flex flex-wrap items-center gap-2 w-full mt-2">
                                     {/* Input Search */}
                                     <div className="relative flex-1 min-w-[250px]">
-    <Input
-        type="text"
-        placeholder="Cari aktivitas atau driver biaya..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        onKeyDown={handleSearchKeyDown} // Tambahkan ini untuk Enter key
-        className="pr-12 w-full"
-    />
-    <button
-        type="button"
-        onClick={handleSearchSubmit} // Ganti dengan fungsi yang benar
-        className="absolute inset-y-0 right-0 flex items-center justify-center px-3 bg-emerald-600 hover:bg-emerald-700 rounded-r-md"
-    >
-        <SearchIcon className="h-4 w-4 text-white" />
-    </button>
-</div>
+                                        <Input
+                                            type="text"
+                                            placeholder="Cari aktivitas atau driver biaya..."
+                                            value={search}
+                                            onChange={(e) =>
+                                                setSearch(e.target.value)
+                                            }
+                                            onKeyDown={handleSearchKeyDown} // Tambahkan ini untuk Enter key
+                                            className="pr-12 w-full"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleSearchSubmit} // Ganti dengan fungsi yang benar
+                                            className="absolute inset-y-0 right-0 flex items-center justify-center px-3 bg-emerald-600 hover:bg-emerald-700 rounded-r-md"
+                                        >
+                                            <SearchIcon className="h-4 w-4 text-white" />
+                                        </button>
+                                    </div>
 
                                     {/* Select perPage */}
                                     <Select
-    value={String(perPage)}
-    onValueChange={(value) => {
-        setPerPage(Number(value));
-        router.get(
-            route("activity-cost-driver-usages.index"), // Ganti dengan route yang benar
-            { perPage: value, search },
-            {
-                preserveState: true,
-                replace: true,
-            }
-        );
-    }}
->
-    <SelectTrigger id="perPage" className="w-[100px]">
-        <SelectValue placeholder="Show" />
-    </SelectTrigger>
-    <SelectContent>
-        <SelectItem value="10">10</SelectItem>
-        <SelectItem value="20">20</SelectItem>
-        <SelectItem value="50">50</SelectItem>
-        <SelectItem value={String(usages.total || 0)}>All</SelectItem>
-    </SelectContent>
-</Select>
+                                        value={String(perPage)}
+                                        onValueChange={(value) => {
+                                            setPerPage(Number(value));
+                                            router.get(
+                                                route(
+                                                    "activity-cost-driver-usages.index"
+                                                ), // Ganti dengan route yang benar
+                                                { perPage: value, search },
+                                                {
+                                                    preserveState: true,
+                                                    replace: true,
+                                                }
+                                            );
+                                        }}
+                                    >
+                                        <SelectTrigger
+                                            id="perPage"
+                                            className="w-[100px]"
+                                        >
+                                            <SelectValue placeholder="Show" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="10">
+                                                10
+                                            </SelectItem>
+                                            <SelectItem value="20">
+                                                20
+                                            </SelectItem>
+                                            <SelectItem value="50">
+                                                50
+                                            </SelectItem>
+                                            <SelectItem
+                                                value={String(
+                                                    usages.total || 0
+                                                )}
+                                            >
+                                                All
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
 
                                     {/* Badge total data */}
                                     <div className="bg-emerald-100 text-emerald-800 text-sm font-semibold px-3 py-1 rounded whitespace-nowrap">
@@ -557,7 +578,8 @@ const handleSearchSubmit = () => {
                             </CardHeader>
 
                             <CardContent className="pt-0">
-                                {(!currentUsages || currentUsages.length === 0) ? (
+                                {!currentUsages ||
+                                currentUsages.length === 0 ? (
                                     <div className="text-center py-16">
                                         <Coffee className="h-20 w-20 text-gray-300 mx-auto mb-4" />
                                         <h3 className="text-xl font-semibold text-gray-600 mb-2">
@@ -712,59 +734,97 @@ const handleSearchSubmit = () => {
                                         </Card>
 
                                         {(usages.total || 0) > perPage && (
-    <Pagination className="mt-4">
-        <PaginationContent>
-            {(usages.links || []).map((link, index) => ( // Ganti dari allocations ke usages
-                <PaginationItem key={index}>
-                    {link.label === "&laquo; Previous" ? (
-                        <PaginationPrevious
-                            href={link.url ?? "#"}
-                            onClick={(e) => {
-                                if (link.url) {
-                                    e.preventDefault();
-                                    router.get(link.url);
-                                }
-                            }}
-                        >
-                            <ChevronLeft className="h-4 w-4" />
-                        </PaginationPrevious>
-                    ) : link.label === "Next &raquo;" ? (
-                        <PaginationNext
-                            href={link.url ?? "#"}
-                            onClick={(e) => {
-                                if (link.url) {
-                                    e.preventDefault();
-                                    router.get(link.url);
-                                }
-                            }}
-                        >
-                            <ChevronRight className="h-4 w-4" />
-                        </PaginationNext>
-                    ) : (
-                        <PaginationLink
-                            href={link.url ?? "#"}
-                            isActive={link.active}
-                            className={
-                                link.active
-                                    ? "bg-emerald-600 hover:bg-emerald-700 text-white hover:text-white"
-                                    : ""
-                            }
-                            onClick={(e) => {
-                                if (link.url) {
-                                    e.preventDefault();
-                                    router.get(link.url);
-                                }
-                            }}
-                            dangerouslySetInnerHTML={{
-                                __html: link.label,
-                            }}
-                        />
-                    )}
-                </PaginationItem>
-            ))}
-        </PaginationContent>
-    </Pagination>
-)}
+                                            <Pagination className="mt-4">
+                                                <PaginationContent>
+                                                    {(usages.links || []).map(
+                                                        (
+                                                            link,
+                                                            index // Ganti dari allocations ke usages
+                                                        ) => (
+                                                            <PaginationItem
+                                                                key={index}
+                                                            >
+                                                                {link.label ===
+                                                                "&laquo; Previous" ? (
+                                                                    <PaginationPrevious
+                                                                        href={
+                                                                            link.url ??
+                                                                            "#"
+                                                                        }
+                                                                        onClick={(
+                                                                            e
+                                                                        ) => {
+                                                                            if (
+                                                                                link.url
+                                                                            ) {
+                                                                                e.preventDefault();
+                                                                                router.get(
+                                                                                    link.url
+                                                                                );
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <ChevronLeft className="h-4 w-4" />
+                                                                    </PaginationPrevious>
+                                                                ) : link.label ===
+                                                                  "Next &raquo;" ? (
+                                                                    <PaginationNext
+                                                                        href={
+                                                                            link.url ??
+                                                                            "#"
+                                                                        }
+                                                                        onClick={(
+                                                                            e
+                                                                        ) => {
+                                                                            if (
+                                                                                link.url
+                                                                            ) {
+                                                                                e.preventDefault();
+                                                                                router.get(
+                                                                                    link.url
+                                                                                );
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <ChevronRight className="h-4 w-4" />
+                                                                    </PaginationNext>
+                                                                ) : (
+                                                                    <PaginationLink
+                                                                        href={
+                                                                            link.url ??
+                                                                            "#"
+                                                                        }
+                                                                        isActive={
+                                                                            link.active
+                                                                        }
+                                                                        className={
+                                                                            link.active
+                                                                                ? "bg-emerald-600 hover:bg-emerald-700 text-white hover:text-white"
+                                                                                : ""
+                                                                        }
+                                                                        onClick={(
+                                                                            e
+                                                                        ) => {
+                                                                            if (
+                                                                                link.url
+                                                                            ) {
+                                                                                e.preventDefault();
+                                                                                router.get(
+                                                                                    link.url
+                                                                                );
+                                                                            }
+                                                                        }}
+                                                                        dangerouslySetInnerHTML={{
+                                                                            __html: link.label,
+                                                                        }}
+                                                                    />
+                                                                )}
+                                                            </PaginationItem>
+                                                        )
+                                                    )}
+                                                </PaginationContent>
+                                            </Pagination>
+                                        )}
                                     </div>
                                 )}
                             </CardContent>
@@ -772,180 +832,208 @@ const handleSearchSubmit = () => {
                     </div>
                 </div>
             </div>
-            <Dialog open={isEdit3DialogOpen} onOpenChange={setIsEdit3DialogOpen}>
-    <DialogContent className="sm:max-w-2xl p-6 bg-white rounded-lg">
-        <DialogHeader className="pb-4 border-b border-gray-300">
-            <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-lg bg-white/20">
-                    <Edit3 className="h-6 w-6 text-cyan-600" />
-                </div>
-                <DialogTitle className="text-xl font-bold text-gray-900">
-                    Edit Catatan Penggunaan Sumber Daya
-                </DialogTitle>
-            </div>
-            <DialogDescription className="text-gray-600 mt-2 text-sm">
-                Perbarui informasi catatan penggunaan sumber daya Anda di bawah ini.
-            </DialogDescription>
-        </DialogHeader>
+            <Dialog
+                open={isEdit3DialogOpen}
+                onOpenChange={setIsEdit3DialogOpen}
+            >
+                <DialogContent className="sm:max-w-2xl p-6 bg-white rounded-lg">
+                    <DialogHeader className="pb-4 border-b border-gray-300">
+                        <div className="flex items-center space-x-3">
+                            <div className="p-2 rounded-lg bg-white/20">
+                                <Edit3 className="h-6 w-6 text-cyan-600" />
+                            </div>
+                            <DialogTitle className="text-xl font-bold text-gray-900">
+                                Edit Catatan Penggunaan Sumber Daya
+                            </DialogTitle>
+                        </div>
+                        <DialogDescription className="text-gray-600 mt-2 text-sm">
+                            Perbarui informasi catatan penggunaan sumber daya
+                            Anda di bawah ini.
+                        </DialogDescription>
+                    </DialogHeader>
 
-        <form onSubmit={handleUpdateUsage} className="space-y-6 mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Aktivitas */}
-                <div className="space-y-3">
-                    <Label className="text-sm font-semibold text-gray-900">
-                        Aktivitas
-                    </Label>
-                    <Select
-                        value={editData.activity_id?.toString()}
-                        onValueChange={(value) =>
-                            setEdit3Data("activity_id", parseInt(value))
-                        }
+                    <form
+                        onSubmit={handleUpdateUsage}
+                        className="space-y-6 mt-4"
                     >
-                        <SelectTrigger className="bg-white border border-gray-300 focus:ring-2 focus:ring-yellow-400 text-gray-800 shadow-none rounded-lg py-3 px-4">
-                            <SelectValue placeholder="Pilih Aktivitas" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {activities.map((activity) => (
-                                <SelectItem key={activity.id} value={activity.id.toString()}>
-                                    {activity.name}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    {editErrors.activity_id && (
-                        <div className="bg-red-100 border border-red-300 rounded-lg p-3">
-                            <p className="text-red-700 text-xs font-medium flex items-center">
-                                <AlertCircle className="h-3 w-3 mr-2" />
-                                {editErrors.activity_id}
-                            </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Aktivitas */}
+                            <div className="space-y-3">
+                                <Label className="text-sm font-semibold text-gray-900">
+                                    Aktivitas
+                                </Label>
+                                <Select
+                                    value={editData.activity_id?.toString()}
+                                    onValueChange={(value) =>
+                                        setEdit3Data(
+                                            "activity_id",
+                                            parseInt(value)
+                                        )
+                                    }
+                                >
+                                    <SelectTrigger className="bg-white border border-gray-300 focus:ring-2 focus:ring-yellow-400 text-gray-800 shadow-none rounded-lg py-3 px-4">
+                                        <SelectValue placeholder="Pilih Aktivitas" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {activities.map((activity) => (
+                                            <SelectItem
+                                                key={activity.id}
+                                                value={activity.id.toString()}
+                                            >
+                                                {activity.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {editErrors.activity_id && (
+                                    <div className="bg-red-100 border border-red-300 rounded-lg p-3">
+                                        <p className="text-red-700 text-xs font-medium flex items-center">
+                                            <AlertCircle className="h-3 w-3 mr-2" />
+                                            {editErrors.activity_id}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Driver Biaya */}
+                            <div className="space-y-3">
+                                <Label className="text-sm font-semibold text-gray-900">
+                                    Driver Biaya
+                                </Label>
+                                <Select
+                                    value={editData.cost_driver_id?.toString()}
+                                    onValueChange={(value) =>
+                                        setEdit3Data(
+                                            "cost_driver_id",
+                                            parseInt(value)
+                                        )
+                                    }
+                                >
+                                    <SelectTrigger className="bg-white border border-gray-300 focus:ring-2 focus:ring-green-400 text-gray-800 shadow-none rounded-lg py-3 px-4">
+                                        <SelectValue placeholder="Pilih Driver Biaya" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {costDrivers.map((driver) => (
+                                            <SelectItem
+                                                key={driver.id}
+                                                value={driver.id.toString()}
+                                            >
+                                                {driver.name} ({driver.unit})
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {editErrors.cost_driver_id && (
+                                    <div className="bg-red-100 border border-red-300 rounded-lg p-3">
+                                        <p className="text-red-700 text-xs font-medium flex items-center">
+                                            <AlertCircle className="h-3 w-3 mr-2" />
+                                            {editErrors.cost_driver_id}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Jumlah Penggunaan */}
+                            <div className="space-y-3">
+                                <Label className="text-sm font-semibold text-gray-900">
+                                    Jumlah Penggunaan
+                                </Label>
+                                <Input
+                                    type="number"
+                                    value={editData.usage_quantity}
+                                    onChange={(e) =>
+                                        setEdit3Data(
+                                            "usage_quantity",
+                                            e.target.value
+                                        )
+                                    }
+                                    placeholder="Masukkan jumlah penggunaan"
+                                    className="bg-white border border-gray-300 focus:ring-2 focus:ring-green-400 text-gray-800 placeholder:text-gray-500 shadow-none rounded-lg py-3 px-4"
+                                />
+                                {editErrors.usage_quantity && (
+                                    <div className="bg-red-100 border border-red-300 rounded-lg p-3">
+                                        <p className="text-red-700 text-xs font-medium flex items-center">
+                                            <AlertCircle className="h-3 w-3 mr-2" />
+                                            {editErrors.usage_quantity}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Tanggal Penggunaan */}
+                            <div className="space-y-3">
+                                <Label className="text-sm font-semibold text-gray-900">
+                                    Tanggal Penggunaan
+                                </Label>
+                                <Input
+                                    type="date"
+                                    value={editData.usage_date}
+                                    onChange={(e) =>
+                                        setEdit3Data(
+                                            "usage_date",
+                                            e.target.value
+                                        )
+                                    }
+                                    className="bg-white border border-gray-300 focus:ring-2 focus:ring-purple-400 text-gray-800 shadow-none rounded-lg py-3 px-4"
+                                />
+                                {editErrors.usage_date && (
+                                    <div className="bg-red-100 border border-red-300 rounded-lg p-3">
+                                        <p className="text-red-700 text-xs font-medium flex items-center">
+                                            <AlertCircle className="h-3 w-3 mr-2" />
+                                            {editErrors.usage_date}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    )}
-                </div>
 
-                {/* Driver Biaya */}
-                <div className="space-y-3">
-                    <Label className="text-sm font-semibold text-gray-900">
-                        Driver Biaya
-                    </Label>
-                    <Select
-                        value={editData.cost_driver_id?.toString()}
-                        onValueChange={(value) =>
-                            setEdit3Data("cost_driver_id", parseInt(value))
-                        }
-                    >
-                        <SelectTrigger className="bg-white border border-gray-300 focus:ring-2 focus:ring-green-400 text-gray-800 shadow-none rounded-lg py-3 px-4">
-                            <SelectValue placeholder="Pilih Driver Biaya" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {costDrivers.map((driver) => (
-                                <SelectItem key={driver.id} value={driver.id.toString()}>
-                                    {driver.name} ({driver.unit})
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    {editErrors.cost_driver_id && (
-                        <div className="bg-red-100 border border-red-300 rounded-lg p-3">
-                            <p className="text-red-700 text-xs font-medium flex items-center">
-                                <AlertCircle className="h-3 w-3 mr-2" />
-                                {editErrors.cost_driver_id}
-                            </p>
+                        {/* Catatan */}
+                        <div className="space-y-3">
+                            <Label className="text-sm font-semibold text-gray-900">
+                                Catatan (Opsional)
+                            </Label>
+                            <Input
+                                type="text"
+                                value={editData.notes}
+                                onChange={(e) =>
+                                    setEdit3Data("notes", e.target.value)
+                                }
+                                placeholder="Masukkan catatan jika perlu"
+                                className="bg-white border border-gray-300 focus:ring-2 focus:ring-emerald-400 text-gray-800 placeholder:text-gray-500 shadow-none rounded-lg py-3 px-4"
+                            />
                         </div>
-                    )}
-                </div>
 
-                {/* Jumlah Penggunaan */}
-                <div className="space-y-3">
-                    <Label className="text-sm font-semibold text-gray-900">
-                        Jumlah Penggunaan
-                    </Label>
-                    <Input
-                        type="number"
-                        value={editData.usage_quantity}
-                        onChange={(e) => setEdit3Data("usage_quantity", e.target.value)}
-                        placeholder="Masukkan jumlah penggunaan"
-                        className="bg-white border border-gray-300 focus:ring-2 focus:ring-green-400 text-gray-800 placeholder:text-gray-500 shadow-none rounded-lg py-3 px-4"
-                    />
-                    {editErrors.usage_quantity && (
-                        <div className="bg-red-100 border border-red-300 rounded-lg p-3">
-                            <p className="text-red-700 text-xs font-medium flex items-center">
-                                <AlertCircle className="h-3 w-3 mr-2" />
-                                {editErrors.usage_quantity}
-                            </p>
-                        </div>
-                    )}
-                </div>
-
-                {/* Tanggal Penggunaan */}
-                <div className="space-y-3">
-                    <Label className="text-sm font-semibold text-gray-900">
-                        Tanggal Penggunaan
-                    </Label>
-                    <Input
-                        type="date"
-                        value={editData.usage_date}
-                        onChange={(e) => setEdit3Data("usage_date", e.target.value)}
-                        className="bg-white border border-gray-300 focus:ring-2 focus:ring-purple-400 text-gray-800 shadow-none rounded-lg py-3 px-4"
-                    />
-                    {editErrors.usage_date && (
-                        <div className="bg-red-100 border border-red-300 rounded-lg p-3">
-                            <p className="text-red-700 text-xs font-medium flex items-center">
-                                <AlertCircle className="h-3 w-3 mr-2" />
-                                {editErrors.usage_date}
-                            </p>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Catatan */}
-            <div className="space-y-3">
-                <Label className="text-sm font-semibold text-gray-900">
-                    Catatan (Opsional)
-                </Label>
-                <Input
-                    type="text"
-                    value={editData.notes}
-                    onChange={(e) => setEdit3Data("notes", e.target.value)}
-                    placeholder="Masukkan catatan jika perlu"
-                    className="bg-white border border-gray-300 focus:ring-2 focus:ring-emerald-400 text-gray-800 placeholder:text-gray-500 shadow-none rounded-lg py-3 px-4"
-                />
-            </div>
-
-            {/* Tombol Submit */}
-            <DialogFooter className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-cyan-500">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsEdit3DialogOpen(false)}
-                    className="flex-1 border-cyan-300 text-cyan-700 hover:bg-cyan-50 hover:border-cyan-400 transition-all duration-200 py-2.5 px-4 rounded-lg"
-                >
-                    Batal
-                </Button>
-                <Button
-                    type="submit"
-                    disabled={editProcessing}
-                    className="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2.5 px-4 rounded-lg transition-all duration-200"
-                >
-                    {editProcessing ? (
-                        <div className="flex items-center justify-center">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                            Menyimpan...
-                        </div>
-                    ) : (
-                        <div className="flex items-center justify-center">
-                            <Edit3 className="h-4 w-4 mr-2" />
-                            Simpan Perubahan
-                        </div>
-                    )}
-                </Button>
-            </DialogFooter>
-        </form>
-    </DialogContent>
-</Dialog>
-
-
-
+                        {/* Tombol Submit */}
+                        <DialogFooter className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-cyan-500">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setIsEdit3DialogOpen(false)}
+                                className="flex-1 border-cyan-300 text-cyan-700 hover:bg-cyan-50 hover:border-cyan-400 transition-all duration-200 py-2.5 px-4 rounded-lg"
+                            >
+                                Batal
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={editProcessing}
+                                className="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2.5 px-4 rounded-lg transition-all duration-200"
+                            >
+                                {editProcessing ? (
+                                    <div className="flex items-center justify-center">
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                        Menyimpan...
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center justify-center">
+                                        <Edit3 className="h-4 w-4 mr-2" />
+                                        Simpan Perubahan
+                                    </div>
+                                )}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
 
             {/* Delete Confirmation Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

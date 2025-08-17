@@ -1,170 +1,61 @@
 <?php
+// database/seeders/SimpleActivitySeeder.php
 
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\{Activity, CostDriver, Department};
+use App\Models\Activity;
+use App\Models\Department;
+use App\Models\CostDriver;
 
 class ActivitySeeder extends Seeder
 {
     public function run(): void
     {
+        $produksi = Department::where('name', 'Departemen Produksi')->first();
+        $qc = Department::where('name', 'Departemen Quality Control')->first();
+        $packaging = Department::where('name', 'Departemen Packaging')->first();
+
+        $jamTenagaKerja = CostDriver::where('name', 'Jam Tenaga Kerja')->first();
+        $jamMesin = CostDriver::where('name', 'Jam Mesin')->first();
+        $kgProduk = CostDriver::where('name', 'Kilogram Produk')->first();
+        $jumlahUnit = CostDriver::where('name', 'Jumlah Unit')->first();
+
         $activities = [
-            // Aktivitas Pra-Produksi - Departemen Produksi
             [
-                'name' => 'Penyortiran Biji Kopi',
-                'description' => 'Pemilahan biji kopi berdasarkan ukuran dan kualitas',
-                'driver' => 'Jam Tenaga Kerja',
-                'department' => 'Produksi'
+                'name' => 'Sorting',
+                'description' => 'Penyortiran biji kopi',
+                'department_id' => $produksi->id,
+                'primary_cost_driver_id' => $jamTenagaKerja->id
             ],
             [
-                'name' => 'Pencucian Biji',
-                'description' => 'Pembersihan biji kopi dari kotoran dan kulit',
-                'driver' => 'Air',
-                'department' => 'Produksi'
-            ],
-
-            // Aktivitas Pengeringan - Departemen Produksi
-            [
-                'name' => 'Pengeringan Natural',
-                'description' => 'Pengeringan biji kopi dengan sinar matahari',
-                'driver' => 'Luas Lantai',
-                'department' => 'Produksi'
+                'name' => 'Roasting',
+                'description' => 'Pemanggangan biji kopi',
+                'department_id' => $produksi->id,
+                'primary_cost_driver_id' => $jamMesin->id
             ],
             [
-                'name' => 'Pengeringan Mesin',
-                'description' => 'Pengeringan biji dengan mesin pengering',
-                'driver' => 'Listrik',
-                'department' => 'Produksi'
-            ],
-
-            // Aktivitas Roasting - Departemen Produksi
-            [
-                'name' => 'Roasting Light',
-                'description' => 'Pemanggangan ringan untuk kopi mild',
-                'driver' => 'Gas LPG',
-                'department' => 'Produksi'
+                'name' => 'Grinding',
+                'description' => 'Penggilingan biji kopi',
+                'department_id' => $produksi->id,
+                'primary_cost_driver_id' => $jamMesin->id
             ],
             [
-                'name' => 'Roasting Medium',
-                'description' => 'Pemanggangan sedang untuk kopi balance',
-                'driver' => 'Gas LPG',
-                'department' => 'Produksi'
+                'name' => 'Quality Check',
+                'description' => 'Pemeriksaan kualitas',
+                'department_id' => $qc->id,
+                'primary_cost_driver_id' => $kgProduk->id
             ],
             [
-                'name' => 'Roasting Dark',
-                'description' => 'Pemanggangan gelap untuk kopi bold',
-                'driver' => 'Gas LPG',
-                'department' => 'Produksi'
-            ],
-
-            // Aktivitas Penggilingan - Departemen Produksi
-            [
-                'name' => 'Penggilingan Coarse',
-                'description' => 'Penggilingan kasar untuk french press',
-                'driver' => 'Listrik',
-                'department' => 'Produksi'
-            ],
-            [
-                'name' => 'Penggilingan Medium',
-                'description' => 'Penggilingan sedang untuk drip coffee',
-                'driver' => 'Listrik',
-                'department' => 'Produksi'
-            ],
-            [
-                'name' => 'Penggilingan Fine',
-                'description' => 'Penggilingan halus untuk espresso',
-                'driver' => 'Listrik',
-                'department' => 'Produksi'
-            ],
-
-            // Aktivitas Blending - Departemen Research & Development
-            [
-                'name' => 'Blending Premium',
-                'description' => 'Pencampuran kopi premium grade',
-                'driver' => 'Jam Mesin',
-                'department' => 'Research & Development'
-            ],
-            [
-                'name' => 'Blending Regular',
-                'description' => 'Pencampuran kopi regular grade',
-                'driver' => 'Jam Mesin',
-                'department' => 'Research & Development'
-            ],
-
-            // Aktivitas Quality Control - Departemen Quality Control
-            [
-                'name' => 'Quality Testing',
-                'description' => 'Pengujian rasa dan aroma kopi',
-                'driver' => 'Jam Tenaga Kerja',
-                'department' => 'Quality Control'
-            ],
-
-            // Aktivitas Pengemasan - Departemen Pengemasan
-            [
-                'name' => 'Pengemasan Sachet',
-                'description' => 'Pengemasan kopi dalam sachet',
-                'driver' => 'Jam Mesin',
-                'department' => 'Pengemasan'
-            ],
-            [
-                'name' => 'Pengemasan Pouch',
-                'description' => 'Pengemasan kopi dalam standing pouch',
-                'driver' => 'Jam Mesin',
-                'department' => 'Pengemasan'
-            ],
-            [
-                'name' => 'Pengemasan Tin',
-                'description' => 'Pengemasan kopi dalam kaleng',
-                'driver' => 'Jam Mesin',
-                'department' => 'Pengemasan'
-            ],
-            [
-                'name' => 'Labeling & Coding',
-                'description' => 'Pemberian label dan kode produk',
-                'driver' => 'Jam Mesin',
-                'department' => 'Pengemasan'
-            ],
-
-            // Aktivitas Penyimpanan - Departemen Gudang
-            [
-                'name' => 'Penyimpanan Gudang',
-                'description' => 'Penyimpanan produk jadi',
-                'driver' => 'Luas Lantai',
-                'department' => 'Gudang'
-            ],
-
-            // Aktivitas Maintenance - Departemen Maintenance
-            [
-                'name' => 'Maintenance Preventif',
-                'description' => 'Perawatan rutin mesin produksi',
-                'driver' => 'Jam Mesin',
-                'department' => 'Maintenance'
-            ],
-            [
-                'name' => 'Maintenance Korektif',
-                'description' => 'Perbaikan mesin yang rusak',
-                'driver' => 'Jam Tenaga Kerja',
-                'department' => 'Maintenance'
+                'name' => 'Packaging',
+                'description' => 'Pengemasan produk',
+                'department_id' => $packaging->id,
+                'primary_cost_driver_id' => $jumlahUnit->id
             ]
         ];
 
-        foreach ($activities as $activityData) {
-            $costDriver = CostDriver::where('name', $activityData['driver'])->first();
-            $department = Department::where('name', $activityData['department'])->first();
-
-            if ($costDriver && $department) {
-                Activity::firstOrCreate(
-                    ['name' => $activityData['name']],
-                    [
-                        'description' => $activityData['description'],
-                        'department_id' => $department->id,
-                        'primary_cost_driver_id' => $costDriver->id,
-                    ]
-                );
-            }
+        foreach ($activities as $activity) {
+            Activity::create($activity);
         }
-
-        echo "✅ " . count($activities) . " activities berhasil dibuat!\n";
     }
 }
