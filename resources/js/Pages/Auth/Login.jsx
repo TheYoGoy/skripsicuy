@@ -110,15 +110,6 @@ export default function Login({ status, canResetPassword }) {
                                             Ingat saya
                                         </span>
                                     </label>
-
-                                    {canResetPassword && (
-                                        <Link
-                                            href={route("password.request")}
-                                            className="text-sm text-emerald-600 hover:text-emerald-800 hover:underline"
-                                        >
-                                            Lupa kata sandi?
-                                        </Link>
-                                    )}
                                 </div>
 
                                 <div className="pt-4">
